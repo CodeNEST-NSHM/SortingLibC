@@ -1,23 +1,26 @@
+# Minimum required version of CMake
 cmake_minimum_required(VERSION 3.10)
-project(SortingLibraryProject)
 
-# Set C standard
-set(CMAKE_C_STANDARD 11)
+# Project name
+project(SortingLibrary)
+
+# Specify the C standard
+set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED True)
 
-# Add the 'headers' directory to the include path
-include_directories(headers)
+# Automatically collect all source and header files in the 'headers' folder
+file(GLOB HEADER_FILES "${CMAKE_SOURCE_DIR}/headers/*.h")
+file(GLOB SOURCE_FILES "${CMAKE_SOURCE_DIR}/headers/*.c")
 
-# Create a library from bubble_sort.c and quick_sort.c
-add_library(sorting STATIC headers/bubble_sort.c headers/quick_sort.c)
-# For a shared library:
-# add_library(sorting SHARED headers/bubble_sort.c headers/quick_sort.c)
+# Add an executable for the main program
+add_executable(main_program main.c)
 
-# Add the main executable
-add_executable(sorting_program main.c)
+# Add a library for the sorting functions
+add_library(sorting_lib ${SOURCE_FILES})
 
-# Link the library to the executable
-target_link_libraries(sorting_program PRIVATE sorting)
+# Include the headers folder so it can be used in the library and main
+target_include_directories(sorting_lib PUBLIC ${CMAKE_SOURCE_DIR}/headers)
+target_include_directories(main_program PUBLIC ${CMAKE_SOURCE_DIR}/headers)
 
-# Add compiler warnings for better code quality
-target_compile_options(sorting_program PRIVATE -Wall -Wextra -pedantic)
+# Link the library to the main executable
+target_link_libraries(main_program PRIVATE sorting_lib)
